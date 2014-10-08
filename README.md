@@ -22,7 +22,7 @@ logging library that extend the logrus
 # Getting started
 
 ```sh
-$ go get github.com/liverpool-music/ruslog
+$ go get github.com/dogenzaka/ruslog
 ```
 
 # Example
