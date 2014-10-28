@@ -43,6 +43,15 @@ TODO
 
 TODO
 
+# Development
+
+## Test
+
+```go
+$ make install-test
+$ make test
+```
+
 # License
 
 MIT License
