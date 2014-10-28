@@ -18,15 +18,15 @@ func TestRuslog(t *testing.T) {
 		}
 
 		Convey("Configure run", func() {
-			_loggings := Configure(loggers)
+			_logging := Configure(loggers)
 			_appenders :=  GetAppenderAll()
 			_formatters := GetFormatterAll()
 
-			fmt.Println("logging:", _loggings)
+			fmt.Println("logging:", _logging)
 			fmt.Println("appenders:", _appenders)
 			fmt.Println("formatters:", _formatters)
 
-			So(len(_loggings), ShouldEqual, 4)
+			So(len(_logging.loggers), ShouldEqual, 4)
 			So(len(_appenders), ShouldEqual, 1)
 			So(len(_formatters), ShouldEqual, 3)
 		})
@@ -75,8 +75,7 @@ func TestRuslog(t *testing.T) {
 			So(GetLevelStr(logrus.ErrorLevel), ShouldEqual, "error")
 			So(GetLevelStr(logrus.FatalLevel), ShouldEqual, "fatal")
 			So(GetLevelStr(logrus.PanicLevel), ShouldEqual, "panic")
-
-
 		})
+
 	})
 }

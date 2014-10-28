@@ -15,7 +15,9 @@ const (
 )
 
 type (
-	Logging map[string]*Logger
+	Logging struct {
+		loggers map[string]*Logger
+	}
 
 	Logger struct {
 		Name string
@@ -52,7 +54,10 @@ var (
 	DEBUG bool = false
 
 	// ruslog package instance
-	logging = Logging{}
+	logging *Logging = &Logging{
+		loggers: make(map[string]*Logger),
+	}
+
 	//var Logging map[string]*Logger = make(map[string]*Logger)
 
 	// Manage ruslog(logrus) Appenders
@@ -88,14 +93,18 @@ var (
 )
 
 // load ruslog
-func Configure(loggers []*Logger) Logging {
-
+func Configure(loggers []*Logger) *Logging {
 	for _, logger := range loggers {
-		logging[logger.Name] = logger.Setup()
+		logging.loggers[logger.Name] = logger.Setup()
 		if DEBUG {
 			fmt.Printf("[LOGRUSH-INFO] Add logging. %s=%s\n", logger.Name, GetLevel(logger.Level))
 		}
 	}
+
+	return logging
+}
+
+func GetLogging() *Logging {
 	return logging
 }
 
@@ -169,7 +178,7 @@ func GetLevelStr(level logrus.Level) string {
 
 // Get the logging logger
 func GetLogger(name string) *Logger {
-	ret := logging[name]
+	ret := logging.loggers[name]
 	return ret
 }
 
