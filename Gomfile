@@ -1,0 +1,10 @@
+# public
+gom 'github.com/Sirupsen/logrus'
+
+# test deps
+group :test do
+    gom 'github.com/smartystreets/goconvey'
+    gom 'code.google.com/p/go.tools/cmd/cover'
+    gom 'github.com/golang/lint/golint'
+    gom 'code.google.com/p/go.tools/cmd/godoc'
+end

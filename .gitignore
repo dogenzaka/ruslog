@@ -26,3 +26,6 @@ _testmain.go
 # IntelliJ
 .idea
 *.iml
+
+# gom (go pakcage manager)
+_vendor
