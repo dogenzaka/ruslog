@@ -194,7 +194,6 @@ func CallMethod(logger *Logger, level string, message string, options map[string
 		method.Call(args)
 	} else {
 		entry.Debug(message)
-		entry.Debugf()
 	}
 }
 
