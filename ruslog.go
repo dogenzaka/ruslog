@@ -1,16 +1,16 @@
 package ruslog
 
 import (
-	"github.com/Sirupsen/logrus"
-	"strings"
-	"reflect"
 	"fmt"
+	"github.com/Sirupsen/logrus"
+	"reflect"
+	"strings"
 )
 
 const (
 	// formatter types
-	JSON = "Json"
-	TEXT = "Text"
+	JSON    = "Json"
+	TEXT    = "Text"
 	DEFAULT = "Default"
 )
 
@@ -20,32 +20,31 @@ type (
 	}
 
 	Logger struct {
-		Name string
-		Type string
-		Level string
+		Name   string
+		Type   string
+		Level  string
 		Format string
-//		Directory string
-//		Pattern string
-//		Interval int64
-//		FileName string
+		//		Directory string
+		//		Pattern string
+		//		Interval int64
+		//		FileName string
 
 		Logrus *logrus.Logger
-		Call func(level string, options map[string]interface {}, messages []string)
+		Call   func(level string, options map[string]interface{}, messages []string)
 	}
 
 	Appenders map[string]*Appender
 
 	Appender struct {
-		Name string
-		Setup func (logger *Logger) *Logger
+		Name  string
+		Setup func(logger *Logger) *Logger
 	}
 
 	Formatters map[string]*Formatter
 
 	Formatter struct {
-		Name string
+		Name      string
 		Formatter interface{}
-
 	}
 )
 
@@ -63,7 +62,7 @@ var (
 	// Manage ruslog(logrus) Appenders
 	appenders = Appenders{
 		DEFAULT: &Appender{
-			Name: DEFAULT,
+			Name:  DEFAULT,
 			Setup: SimpleAppender,
 		},
 	}
@@ -72,24 +71,23 @@ var (
 	formatters = func() Formatters {
 		ret := Formatters{
 			DEFAULT: &Formatter{
-				Name: DEFAULT,
+				Name:      DEFAULT,
 				Formatter: &SimpleFormatter{},
 			},
 			//logrus
 			TEXT: &Formatter{
-				Name: TEXT,
+				Name:      TEXT,
 				Formatter: &logrus.TextFormatter{},
 			},
 			// logrus
 			JSON: &Formatter{
-				Name: JSON,
+				Name:      JSON,
 				Formatter: &logrus.JSONFormatter{},
 			},
 		}
 
 		return ret
 	}()
-
 )
 
 // load ruslog
@@ -109,7 +107,7 @@ func GetLogging() *Logging {
 }
 
 // Added the Formatter to manage
-func AddFormatter(formatter *Formatter) *Formatter{
+func AddFormatter(formatter *Formatter) *Formatter {
 	formatters[formatter.Name] = formatter
 	return formatters[formatter.Name]
 }
@@ -189,21 +187,21 @@ func CallMethod(logger *Logger, level string, message string, options map[string
 
 	entry := loggerLogrus.WithFields(options)
 	methodName := level
-
 	method := reflect.ValueOf(entry).MethodByName(methodName)
+
 	if method.IsValid() {
+		args := []reflect.Value{reflect.ValueOf(message)}
+		method.Call(args)
+	} else {
 		entry.Debug(message)
+		entry.Debugf()
 	}
-	args := []reflect.Value{reflect.ValueOf(message)}
-	method.Call(args)
 }
-
-
 
 // -- Logger
 
 // Setup appender
-func (logger *Logger)Setup() *Logger {
+func (logger *Logger) Setup() *Logger {
 
 	appender := appenders[logger.Type]
 	if appender == nil {
@@ -228,7 +226,7 @@ func (l *Logger) Info(options map[string]interface{}, messages ...string) {
 
 // Warn log output
 func (l *Logger) Warn(options map[string]interface{}, messages ...string) {
-	l.Call("Warn",  options, messages)
+	l.Call("Warn", options, messages)
 }
 
 // Error log outputz

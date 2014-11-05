@@ -1,15 +1,15 @@
 package ruslog
 
 import (
-	"github.com/Sirupsen/logrus"
 	"bytes"
 	"fmt"
+	"github.com/Sirupsen/logrus"
 	"os"
 	"strings"
 )
 
 type (
-	SimpleFormatter struct {}
+	SimpleFormatter struct{}
 )
 
 func (f *SimpleFormatter) Format(entry *logrus.Entry) ([]byte, error) {
@@ -29,7 +29,7 @@ func (f *SimpleFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func SimpleAppender(logger *Logger) *Logger{
+func SimpleAppender(logger *Logger) *Logger {
 
 	logrusLogger := logrus.New()
 
@@ -40,7 +40,7 @@ func SimpleAppender(logger *Logger) *Logger{
 	logrusLogger.Level = GetLevel(logger.Level)
 	logrusLogger.Out = os.Stdout
 
-	logger.Call = func(level string, options map[string]interface {}, messages []string) {
+	logger.Call = func(level string, options map[string]interface{}, messages []string) {
 		message := strings.Join(messages, " ") // dynamic message
 		CallMethod(logger, level, message, options)
 	}
