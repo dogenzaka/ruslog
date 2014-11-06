@@ -2,16 +2,21 @@ package ruslog
 
 import (
 	"fmt"
-	"github.com/Sirupsen/logrus"
 	"reflect"
 	"strings"
+
+	"github.com/Sirupsen/logrus"
 )
 
 const (
 	// formatter types
-	JSON    = "Json"
-	TEXT    = "Text"
+	SIMPLE = "Simple"
+	JSON   = "Json"
+	TEXT   = "Text"
+	// Appender types
 	DEFAULT = "Default"
+	SIZE    = "Size"
+	DAILY   = "Daily"
 )
 
 type (
@@ -28,6 +33,9 @@ type (
 		//		Pattern string
 		//		Interval int64
 		//		FileName string
+		FilePath     string
+		RotationSize int64
+		MaxRotation  int
 
 		Logrus *logrus.Logger
 		Call   func(level string, options map[string]interface{}, messages []string)
@@ -63,15 +71,23 @@ var (
 	appenders = Appenders{
 		DEFAULT: &Appender{
 			Name:  DEFAULT,
-			Setup: SimpleAppender,
+			Setup: defaultAppender,
+		},
+		SIZE: &Appender{
+			Name:  SIZE,
+			Setup: sizeRollingFileAppender,
+		},
+		DAILY: &Appender{
+			Name:  DAILY,
+			Setup: dailyRollingFileAppender,
 		},
 	}
 
 	// Manage ruslog(logrus) formatters
 	formatters = func() Formatters {
 		ret := Formatters{
-			DEFAULT: &Formatter{
-				Name:      DEFAULT,
+			SIMPLE: &Formatter{
+				Name:      SIMPLE,
 				Formatter: &SimpleFormatter{},
 			},
 			//logrus

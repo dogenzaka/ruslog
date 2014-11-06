@@ -11,13 +11,14 @@ logging library that extend the logrus
 
 - [x] Manage multiple loggers. 
 - [x] Manage of an Appender and Formatter. 
-- [ ] File appender 
+- [x] File appender
 - [ ] Asynchronous log output
 
 
 # Requirements
 
 - [logrus](https://github.com/sirupsen/logrus)
+- [rotator](https://github.com/dogenzaka/rotator)
 
 # Getting started
 

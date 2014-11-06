@@ -2,19 +2,21 @@ package ruslog
 
 import (
 	"fmt"
-	"github.com/Sirupsen/logrus"
-	. "github.com/smartystreets/goconvey/convey"
 	"reflect"
 	"testing"
+
+	"github.com/Sirupsen/logrus"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestRuslog(t *testing.T) {
 	Convey("Another pattern log output", t, func() {
 		loggers := []*Logger{
-			&Logger{Name: "Test0", Type: DEFAULT, Level: "INFO", Format: DEFAULT},
+			&Logger{Name: "Test0", Type: DEFAULT, Level: "INFO", Format: SIMPLE},
 			&Logger{Name: "Test1", Type: DEFAULT, Level: "Info", Format: TEXT},
 			&Logger{Name: "Test2", Type: DEFAULT, Level: "warn", Format: JSON},
-			&Logger{Name: "Test3", Type: DEFAULT, Level: "DEBUG", Format: DEFAULT},
+			&Logger{Name: "Test3", Type: DEFAULT, Level: "DEBUG", Format: SIMPLE},
 		}
 
 		Convey("Configure run", func() {
@@ -27,22 +29,22 @@ func TestRuslog(t *testing.T) {
 			fmt.Println("formatters:", _formatters)
 
 			So(len(_logging.loggers), ShouldEqual, 4)
-			So(len(_appenders), ShouldEqual, 1)
+			So(len(_appenders), ShouldEqual, 3)
 			So(len(_formatters), ShouldEqual, 3)
 		})
 
 		Convey("Get Appender[s]", func() {
 			_appenders := GetAppenderAll()
 			_appender := _appenders[DEFAULT]
-			So(len(_appenders), ShouldEqual, 1)
+			So(len(_appenders), ShouldEqual, 3)
 			So(_appender.Name, ShouldEqual, DEFAULT)
 		})
 
 		Convey("Get Formatter[s]", func() {
 			_formatters := GetFormatterAll()
-			_formatter := _formatters[DEFAULT]
+			_formatter := _formatters[SIMPLE]
 			So(len(_formatters), ShouldEqual, 3)
-			So(_formatter.Name, ShouldEqual, DEFAULT)
+			So(_formatter.Name, ShouldEqual, SIMPLE)
 		})
 
 		Convey("Output log", func() {
