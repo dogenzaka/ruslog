@@ -8,52 +8,27 @@ import (
 	"github.com/Sirupsen/logrus"
 )
 
-const (
-	// formatter types
-	SIMPLE = "Simple"
-	JSON   = "Json"
-	TEXT   = "Text"
-	// Appender types
-	DEFAULT = "Default"
-	SIZE    = "Size"
-	DAILY   = "Daily"
-)
-
 type (
-	Logging struct {
-		loggers map[string]*Logger
-	}
-
 	Logger struct {
-		Name   string
-		Type   string
-		Level  string
-		Format string
-		//		Directory string
-		//		Pattern string
-		//		Interval int64
-		//		FileName string
+		Name         string
+		Type         string
+		Format       string
+		Level        string
 		FilePath     string
 		RotationSize int64
 		MaxRotation  int
 
-		Logrus *logrus.Logger
-		Call   func(level string, options map[string]interface{}, messages []string)
+		Call func(level string, options map[string]interface{}, messages []string)
+
+		logrus *logrus.Logger
 	}
 
-	Appenders map[string]*Appender
-
-	Appender struct {
-		Name  string
-		Setup func(logger *Logger) *Logger
+	logging struct {
+		loggers map[string]*Logger
 	}
 
-	Formatters map[string]*Formatter
-
-	Formatter struct {
-		Name      string
-		Formatter interface{}
-	}
+	appenders  map[string]*Appender
+	formatters map[string]*Formatter
 )
 
 var (
@@ -61,14 +36,12 @@ var (
 	DEBUG bool = false
 
 	// ruslog package instance
-	logging *Logging = &Logging{
+	Ruslog *logging = &logging{
 		loggers: make(map[string]*Logger),
 	}
 
-	//var Logging map[string]*Logger = make(map[string]*Logger)
-
 	// Manage ruslog(logrus) Appenders
-	appenders = Appenders{
+	Appenders = appenders{
 		DEFAULT: &Appender{
 			Name:  DEFAULT,
 			Setup: defaultAppender,
@@ -84,8 +57,8 @@ var (
 	}
 
 	// Manage ruslog(logrus) formatters
-	formatters = func() Formatters {
-		ret := Formatters{
+	Formatters = func() formatters {
+		ret := formatters{
 			SIMPLE: &Formatter{
 				Name:      SIMPLE,
 				Formatter: &SimpleFormatter{},
@@ -107,99 +80,43 @@ var (
 )
 
 // load ruslog
-func Configure(loggers []*Logger) *Logging {
+func Configure(loggers []*Logger) *logging {
 	for _, logger := range loggers {
-		logging.loggers[logger.Name] = logger.Setup()
+		Ruslog.loggers[logger.Name] = logger.Setup()
 		if DEBUG {
-			fmt.Printf("[LOGRUSH-INFO] Add logging. %s=%s\n", logger.Name, GetLevel(logger.Level))
+			fmt.Printf("[RUSLOG-INFO] Add logging. %s=%s\n", logger.Name, GetLevel(logger.Level))
 		}
 	}
 
-	return logging
-}
-
-func GetLogging() *Logging {
-	return logging
+	return Ruslog
 }
 
 // Added the Formatter to manage
 func AddFormatter(formatter *Formatter) *Formatter {
-	formatters[formatter.Name] = formatter
-	return formatters[formatter.Name]
+	Formatters[formatter.Name] = formatter
+	return Formatters[formatter.Name]
 }
 
 // Added the Appender to manage
 func AddAppender(appender *Appender) *Appender {
-	appenders[appender.Name] = appender
-	return appenders[appender.Name]
+	Appenders[appender.Name] = appender
+	return Appenders[appender.Name]
 
-}
-
-// Get the Formatter to manage
-func GetFormatter(name string) *Formatter {
-	f := formatters[name]
-	return f
-}
-
-// Get the Appender to manage
-func GetAppender(name string) *Appender {
-	return appenders[name]
-}
-
-// Get all the Appender  to manage
-func GetAppenderAll() Appenders {
-	return appenders
-}
-
-// Get all the Formatter  to manage
-func GetFormatterAll() Formatters {
-	return formatters
 }
 
 // Get the logging level value
 func GetLevel(level string) logrus.Level {
-	levelStr := strings.ToLower(level)
-
-	ret, err := logrus.ParseLevel(levelStr)
-
+	l, err := logrus.ParseLevel(strings.ToLower(level))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
-
-	return ret
-
-}
-
-//// Get the logging level string value
-func GetLevelStr(level logrus.Level) string {
-	switch level {
-	case logrus.DebugLevel:
-		return "debug"
-	case logrus.InfoLevel:
-		return "info"
-	case logrus.WarnLevel:
-		return "warn"
-	case logrus.ErrorLevel:
-		return "error"
-	case logrus.FatalLevel:
-		return "fatal"
-	case logrus.PanicLevel:
-		return "panic"
-	default:
-		return ""
-	}
-}
-
-// Get the logging logger
-func GetLogger(name string) *Logger {
-	ret := logging.loggers[name]
-	return ret
+	return l
 }
 
 // Call logger method for a given level
 func CallMethod(logger *Logger, level string, message string, options map[string]interface{}) {
 	//fmt.Println("CallMethod", logger, level, message, options)
-	loggerLogrus := logger.Logrus
+	loggerLogrus := logger.logrus
 
 	entry := loggerLogrus.WithFields(options)
 	methodName := level
@@ -218,12 +135,12 @@ func CallMethod(logger *Logger, level string, message string, options map[string
 // Setup appender
 func (logger *Logger) Setup() *Logger {
 
-	appender := appenders[logger.Type]
+	appender := Appenders[logger.Type]
 	if appender == nil {
 		if DEBUG {
 			fmt.Println("[LOGRUSH-INFO] Default logging.", DEFAULT)
 		}
-		appender = GetAppender(DEFAULT)
+		appender = Appenders[DEFAULT]
 	}
 
 	return appender.Setup(logger)
