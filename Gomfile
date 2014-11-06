@@ -1,5 +1,6 @@
 # public
 gom 'github.com/Sirupsen/logrus'
+gom 'github.com/dogenzaka/rotator'
 
 # test deps
 group :test do
