@@ -1,6 +1,9 @@
 ruslog During the development :)
 ======
 
+[![Build Status](http://img.shields.io/travis/dogenzaka/ruslog.svg?style=flat)](https://travis-ci.org/dogenzaka/ruslog)
+[![Coverage](http://img.shields.io/codecov/c/github/dogenzaka/ruslog.svg?style=flat)](https://codecov.io/github/dogenzaka/ruslog)
+
 wrap logrush
 
 # What is ruslog?
