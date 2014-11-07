@@ -8,7 +8,19 @@ import (
 	"github.com/Sirupsen/logrus"
 )
 
+const (
+	// formatter types
+	SIMPLE = "Simple"
+	JSON   = "Json"
+	TEXT   = "Text"
+)
+
 type (
+	Formatter struct {
+		Name      string
+		Formatter logrus.Formatter
+	}
+
 	SimpleFormatter struct{}
 )
 

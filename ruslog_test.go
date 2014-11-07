@@ -21,8 +21,8 @@ func TestRuslog(t *testing.T) {
 
 		Convey("Configure run", func() {
 			_logging := Configure(loggers)
-			_appenders := GetAppenderAll()
-			_formatters := GetFormatterAll()
+			_appenders := Appenders
+			_formatters := Formatters
 
 			fmt.Println("logging:", _logging)
 			fmt.Println("appenders:", _appenders)
@@ -34,14 +34,14 @@ func TestRuslog(t *testing.T) {
 		})
 
 		Convey("Get Appender[s]", func() {
-			_appenders := GetAppenderAll()
+			_appenders := Appenders
 			_appender := _appenders[DEFAULT]
 			So(len(_appenders), ShouldEqual, 3)
 			So(_appender.Name, ShouldEqual, DEFAULT)
 		})
 
 		Convey("Get Formatter[s]", func() {
-			_formatters := GetFormatterAll()
+			_formatters := Formatters
 			_formatter := _formatters[SIMPLE]
 			So(len(_formatters), ShouldEqual, 3)
 			So(_formatter.Name, ShouldEqual, SIMPLE)
@@ -49,7 +49,7 @@ func TestRuslog(t *testing.T) {
 
 		Convey("Output log", func() {
 			fmt.Println("")
-			logger := GetLogger("Test0")
+			logger := Ruslog.loggers["Test0"]
 			logger.Debug(nil, "output log level:Debug")
 			logger.Info(nil, "output log level:Info")
 			logger.Warn(nil, "output log level:Warn")
@@ -64,28 +64,28 @@ func TestRuslog(t *testing.T) {
 
 		Convey("Output multi log", func() {
 			fmt.Println("\ntarget: 0")
-			logger0 := GetLogger("Test0")
+			logger0 := Ruslog.loggers["Test0"]
 			logger0.Debug(nil, "output multi log level:Debug 0")
 			logger0.Info(nil, "output multi log level:Info 0")
 			logger0.Warn(nil, "output multi log level:Warn 0")
 			logger0.Error(nil, "output multi log level:Error 0")
 
 			fmt.Println("\ntarget: 1")
-			logger1 := GetLogger("Test1")
+			logger1 := Ruslog.loggers["Test1"]
 			logger1.Debug(nil, "output multi log level:Debug 1")
 			logger1.Info(nil, "output multi log level:Info 1")
 			logger1.Warn(nil, "output multi log level:Warn 1")
 			logger1.Error(nil, "output multi log level:Error 1")
 
 			fmt.Println("\ntarget: 2")
-			logger2 := GetLogger("Test2")
+			logger2 := Ruslog.loggers["Test2"]
 			logger2.Debug(nil, "output multi log level:Debug 2")
 			logger2.Info(nil, "output multi log level:Info 2")
 			logger2.Warn(nil, "output multi log level:Warn 2")
 			logger2.Error(nil, "output multi log level:Error 2")
 
 			fmt.Println("\ntarget: 3")
-			logger3 := GetLogger("Test3")
+			logger3 := Ruslog.loggers["Test3"]
 			logger3.Debug(nil, "output multi log level:Debug 3")
 			logger3.Info(nil, "output multi log level:Info 3")
 			logger3.Warn(nil, "output multi log level:Warn 3")
@@ -99,15 +99,6 @@ func TestRuslog(t *testing.T) {
 			So(GetLevel("DeBug"), ShouldEqual, logrus.DebugLevel)
 			So(GetLevel("debug"), ShouldEqual, logrus.DebugLevel)
 
-		})
-
-		Convey("Get Level", func() {
-			So(GetLevelStr(logrus.DebugLevel), ShouldEqual, "debug")
-			So(GetLevelStr(logrus.InfoLevel), ShouldEqual, "info")
-			So(GetLevelStr(logrus.WarnLevel), ShouldEqual, "warn")
-			So(GetLevelStr(logrus.ErrorLevel), ShouldEqual, "error")
-			So(GetLevelStr(logrus.FatalLevel), ShouldEqual, "fatal")
-			So(GetLevelStr(logrus.PanicLevel), ShouldEqual, "panic")
 		})
 
 	})
