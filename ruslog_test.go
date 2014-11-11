@@ -49,7 +49,7 @@ func TestRuslog(t *testing.T) {
 
 		Convey("Output log", func() {
 			fmt.Println("")
-			logger := Ruslog.loggers["Test0"]
+			logger := Logging.loggers["Test0"]
 			logger.Debug(nil, "output log level:Debug")
 			logger.Info(nil, "output log level:Info")
 			logger.Warn(nil, "output log level:Warn")
@@ -64,28 +64,28 @@ func TestRuslog(t *testing.T) {
 
 		Convey("Output multi log", func() {
 			fmt.Println("\ntarget: 0")
-			logger0 := Ruslog.loggers["Test0"]
+			logger0 := Logging.loggers["Test0"]
 			logger0.Debug(nil, "output multi log level:Debug 0")
 			logger0.Info(nil, "output multi log level:Info 0")
 			logger0.Warn(nil, "output multi log level:Warn 0")
 			logger0.Error(nil, "output multi log level:Error 0")
 
 			fmt.Println("\ntarget: 1")
-			logger1 := Ruslog.loggers["Test1"]
+			logger1 := Logging.loggers["Test1"]
 			logger1.Debug(nil, "output multi log level:Debug 1")
 			logger1.Info(nil, "output multi log level:Info 1")
 			logger1.Warn(nil, "output multi log level:Warn 1")
 			logger1.Error(nil, "output multi log level:Error 1")
 
 			fmt.Println("\ntarget: 2")
-			logger2 := Ruslog.loggers["Test2"]
+			logger2 := Logging.loggers["Test2"]
 			logger2.Debug(nil, "output multi log level:Debug 2")
 			logger2.Info(nil, "output multi log level:Info 2")
 			logger2.Warn(nil, "output multi log level:Warn 2")
 			logger2.Error(nil, "output multi log level:Error 2")
 
 			fmt.Println("\ntarget: 3")
-			logger3 := Ruslog.loggers["Test3"]
+			logger3 := Logging.loggers["Test3"]
 			logger3.Debug(nil, "output multi log level:Debug 3")
 			logger3.Info(nil, "output multi log level:Info 3")
 			logger3.Warn(nil, "output multi log level:Warn 3")

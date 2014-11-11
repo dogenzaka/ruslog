@@ -36,7 +36,7 @@ var (
 	DEBUG bool = false
 
 	// ruslog package instance
-	Ruslog *logging = &logging{
+	Logging *logging = &logging{
 		loggers: make(map[string]*Logger),
 	}
 
@@ -82,13 +82,13 @@ var (
 // load ruslog
 func Configure(loggers []*Logger) *logging {
 	for _, logger := range loggers {
-		Ruslog.loggers[logger.Name] = logger.Setup()
+		Logging.loggers[logger.Name] = logger.Setup()
 		if DEBUG {
 			fmt.Printf("[RUSLOG-INFO] Add logging. %s=%s\n", logger.Name, GetLevel(logger.Level))
 		}
 	}
 
-	return Ruslog
+	return Logging
 }
 
 // Added the Formatter to manage
@@ -102,6 +102,16 @@ func AddAppender(appender *Appender) *Appender {
 	Appenders[appender.Name] = appender
 	return Appenders[appender.Name]
 
+}
+
+func GetLogger(name string) *Logger {
+	l := Logging[name]
+	// if name logger is not found, return default logger.
+	if l == nil {
+		l = &Logger{Type: DEFAULT}
+		return l.Setup()
+	}
+	return l
 }
 
 // Get the logging level value
