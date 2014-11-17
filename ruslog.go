@@ -105,7 +105,7 @@ func AddAppender(appender *Appender) *Appender {
 }
 
 func GetLogger(name string) *Logger {
-	l := Logging[name]
+	l := Logging.loggers[name]
 	// if name logger is not found, return default logger.
 	if l == nil {
 		l = &Logger{Type: DEFAULT}
