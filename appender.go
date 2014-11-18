@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	DEFAULT = "Default"
-	SIZE    = "Size"
-	DAILY   = "Daily"
+	APPENDER_DEFAULT = "Default"
+	APPENDER_SIZE    = "Size"
+	APPENDER_DAILY   = "Daily"
 )
 
 type Appender struct {
@@ -19,7 +19,6 @@ type Appender struct {
 }
 
 func defaultAppender(l *Logger) *Logger {
-
 	log := logrus.New()
 	log.Formatter = Formatters[l.Format].Formatter
 	log.Level = GetLevel(l.Level)

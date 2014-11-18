@@ -10,9 +10,9 @@ import (
 
 const (
 	// formatter types
-	SIMPLE = "Simple"
-	JSON   = "Json"
-	TEXT   = "Text"
+	FORMATTER_SIMPLE = "Simple"
+	FORMATTER_JSON   = "Json"
+	FORMATTER_TEXT   = "Text"
 )
 
 type (

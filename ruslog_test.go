@@ -13,10 +13,10 @@ import (
 func TestRuslog(t *testing.T) {
 	Convey("Another pattern log output", t, func() {
 		loggers := []*Logger{
-			&Logger{Name: "Test0", Type: DEFAULT, Level: "INFO", Format: SIMPLE},
-			&Logger{Name: "Test1", Type: DEFAULT, Level: "Info", Format: TEXT},
-			&Logger{Name: "Test2", Type: DEFAULT, Level: "warn", Format: JSON},
-			&Logger{Name: "Test3", Type: DEFAULT, Level: "DEBUG", Format: SIMPLE},
+			&Logger{Name: "Test0", Type: APPENDER_DEFAULT, Level: logrus.InfoLevel.String(), Format: FORMATTER_SIMPLE},
+			&Logger{Name: "Test1", Type: APPENDER_DEFAULT, Level: "Info", Format: FORMATTER_TEXT},
+			&Logger{Name: "Test2", Type: APPENDER_DEFAULT, Level: "warn", Format: FORMATTER_JSON},
+			&Logger{Name: "Test3", Type: APPENDER_DEFAULT, Level: "DEBUG", Format: FORMATTER_SIMPLE},
 		}
 
 		Convey("Configure run", func() {
@@ -35,16 +35,16 @@ func TestRuslog(t *testing.T) {
 
 		Convey("Get Appender[s]", func() {
 			_appenders := Appenders
-			_appender := _appenders[DEFAULT]
+			_appender := _appenders[APPENDER_DEFAULT]
 			So(len(_appenders), ShouldEqual, 3)
-			So(_appender.Name, ShouldEqual, DEFAULT)
+			So(_appender.Name, ShouldEqual, APPENDER_DEFAULT)
 		})
 
 		Convey("Get Formatter[s]", func() {
 			_formatters := Formatters
-			_formatter := _formatters[SIMPLE]
+			_formatter := _formatters[FORMATTER_SIMPLE]
 			So(len(_formatters), ShouldEqual, 3)
-			So(_formatter.Name, ShouldEqual, SIMPLE)
+			So(_formatter.Name, ShouldEqual, FORMATTER_SIMPLE)
 		})
 
 		Convey("Output log", func() {

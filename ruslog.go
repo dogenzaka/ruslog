@@ -10,13 +10,13 @@ import (
 
 type (
 	Logger struct {
-		Name         string
-		Type         string
-		Format       string
-		Level        string
-		FilePath     string
-		RotationSize int64
-		MaxRotation  int
+		Name         string // logger name(uniq,required)
+		Type         string // ruslog.APPENDER_XXXX
+		Format       string // ruslog.FORMATTER_XXXX
+		Level        string // logrus.XXXXLevel.String()
+		FilePath     string // outpu file path (optional)
+		RotationSize int64  //  size threshold of the rotation example 10M) 1024 * 1024 * 10 (optional)
+		MaxRotation  int    // maximum count of the rotation (optional)
 
 		Call func(level string, options map[string]interface{}, messages []string)
 
@@ -42,16 +42,16 @@ var (
 
 	// Manage ruslog(logrus) Appenders
 	Appenders = appenders{
-		DEFAULT: &Appender{
-			Name:  DEFAULT,
+		APPENDER_DEFAULT: &Appender{
+			Name:  APPENDER_DEFAULT,
 			Setup: defaultAppender,
 		},
-		SIZE: &Appender{
-			Name:  SIZE,
+		APPENDER_SIZE: &Appender{
+			Name:  APPENDER_SIZE,
 			Setup: sizeRollingFileAppender,
 		},
-		DAILY: &Appender{
-			Name:  DAILY,
+		APPENDER_DAILY: &Appender{
+			Name:  APPENDER_DAILY,
 			Setup: dailyRollingFileAppender,
 		},
 	}
@@ -59,18 +59,18 @@ var (
 	// Manage ruslog(logrus) formatters
 	Formatters = func() formatters {
 		ret := formatters{
-			SIMPLE: &Formatter{
-				Name:      SIMPLE,
+			FORMATTER_SIMPLE: &Formatter{
+				Name:      FORMATTER_SIMPLE,
 				Formatter: &SimpleFormatter{},
 			},
 			//logrus
-			TEXT: &Formatter{
-				Name:      TEXT,
+			FORMATTER_TEXT: &Formatter{
+				Name:      FORMATTER_TEXT,
 				Formatter: &logrus.TextFormatter{},
 			},
 			// logrus
-			JSON: &Formatter{
-				Name:      JSON,
+			FORMATTER_JSON: &Formatter{
+				Name:      FORMATTER_JSON,
 				Formatter: &logrus.JSONFormatter{},
 			},
 		}
@@ -108,7 +108,7 @@ func GetLogger(name string) *Logger {
 	l := Logging.loggers[name]
 	// if name logger is not found, return default logger.
 	if l == nil {
-		l = &Logger{Type: DEFAULT}
+		l = &Logger{Type: APPENDER_DEFAULT}
 		return l.Setup()
 	}
 	return l
@@ -125,7 +125,6 @@ func GetLevel(level string) logrus.Level {
 
 // Call logger method for a given level
 func CallMethod(logger *Logger, level string, message string, options map[string]interface{}) {
-	//fmt.Println("CallMethod", logger, level, message, options)
 	loggerLogrus := logger.logrus
 
 	entry := loggerLogrus.WithFields(options)
@@ -148,35 +147,70 @@ func (logger *Logger) Setup() *Logger {
 	appender := Appenders[logger.Type]
 	if appender == nil {
 		if DEBUG {
-			fmt.Println("[LOGRUSH-INFO] Default logging.", DEFAULT)
+			fmt.Println("[RUSLOG-INFO] Default logging.", APPENDER_DEFAULT)
 		}
-		appender = Appenders[DEFAULT]
+		appender = Appenders[APPENDER_DEFAULT]
 	}
 
 	return appender.Setup(logger)
 }
 
-// Debug log output
+// Debug log output (goroutine)
 func (l *Logger) Debug(options map[string]interface{}, messages ...string) {
+	go l.Call("Debug", options, messages)
+}
+
+// Info log output (goroutine)
+func (l *Logger) Info(options map[string]interface{}, messages ...string) {
+	go l.Call("Info", options, messages)
+}
+
+// Warn log output (goroutine)
+func (l *Logger) Warn(options map[string]interface{}, messages ...string) {
+	go l.Call("Warn", options, messages)
+}
+
+// Error log output (goroutine)
+func (l *Logger) Error(options map[string]interface{}, messages ...string) {
+	go l.Call("Error", options, messages)
+}
+
+// Fatal log output (goroutine)
+func (l *Logger) Fatal(options map[string]interface{}, messages ...string) {
+	go l.Call("Fatal", options, messages)
+}
+
+///
+
+// Debug log output (not goroutine)
+func (l *Logger) DebugSync(options map[string]interface{}, messages ...string) {
 	l.Call("Debug", options, messages)
 }
 
-// Info log output
-func (l *Logger) Info(options map[string]interface{}, messages ...string) {
+// Info log output (not goroutine)
+func (l *Logger) InfoSync(options map[string]interface{}, messages ...string) {
 	l.Call("Info", options, messages)
 }
 
-// Warn log output
-func (l *Logger) Warn(options map[string]interface{}, messages ...string) {
+// Warn log output (not goroutine)
+func (l *Logger) WarnSync(options map[string]interface{}, messages ...string) {
 	l.Call("Warn", options, messages)
 }
 
-// Error log outputz
-func (l *Logger) Error(options map[string]interface{}, messages ...string) {
+// Error log output (not goroutine)
+func (l *Logger) ErrorSync(options map[string]interface{}, messages ...string) {
 	l.Call("Error", options, messages)
 }
 
-// Fatal log output
-func (l *Logger) Fatal(options map[string]interface{}, messages ...string) {
+// Fatal log output (not goroutine)
+func (l *Logger) FatalSync(options map[string]interface{}, messages ...string) {
 	l.Call("Fatal", options, messages)
+}
+
+///
+
+// Hook io.Writer (gorutine)
+func (l *Logger) Output(calldepth int, s string) error {
+	go l.Call("Info", nil, []string{s})
+	return nil
 }
