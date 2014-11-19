@@ -209,8 +209,13 @@ func (l *Logger) FatalSync(options map[string]interface{}, messages ...string) {
 
 ///
 
-// Hook io.Writer (gorutine)
+// log.Logger.Output like (gorutine)
 func (l *Logger) Output(calldepth int, s string) error {
 	go l.Call("Info", nil, []string{s})
 	return nil
+}
+
+// io.Write like (gorutine)
+func (l *Logger) Write(p []byte) (n int, err error) {
+	go l.logrus.Out.Write(p)
 }
