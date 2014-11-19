@@ -218,4 +218,5 @@ func (l *Logger) Output(calldepth int, s string) error {
 // io.Write like (gorutine)
 func (l *Logger) Write(p []byte) (n int, err error) {
 	go l.logrus.Out.Write(p)
+	return 0, nil // The exception is ignored
 }
