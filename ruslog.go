@@ -108,8 +108,8 @@ func GetLogger(name string) *Logger {
 	l := Logging.loggers[name]
 	// if name logger is not found, return default logger.
 	if l == nil {
-		l = &Logger{Type: APPENDER_DEFAULT}
-		return l.Setup()
+		l = &Logger{Name: name, Type: APPENDER_DEFAULT, Level: "Info", Format: FORMATTER_TEXT}
+		Configure([]*Logger{l})
 	}
 	return l
 }
