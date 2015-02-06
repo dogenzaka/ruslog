@@ -57,26 +57,22 @@ var (
 	}
 
 	// Manage ruslog(logrus) formatters
-	Formatters = func() formatters {
-		ret := formatters{
-			FORMATTER_SIMPLE: &Formatter{
-				Name:      FORMATTER_SIMPLE,
-				Formatter: &SimpleFormatter{},
-			},
-			//logrus
-			FORMATTER_TEXT: &Formatter{
-				Name:      FORMATTER_TEXT,
-				Formatter: &logrus.TextFormatter{},
-			},
-			// logrus
-			FORMATTER_JSON: &Formatter{
-				Name:      FORMATTER_JSON,
-				Formatter: &logrus.JSONFormatter{},
-			},
-		}
-
-		return ret
-	}()
+	Formatters = formatters{
+		FORMATTER_SIMPLE: &Formatter{
+			Name:      FORMATTER_SIMPLE,
+			Formatter: &SimpleFormatter{},
+		},
+		//logrus
+		FORMATTER_TEXT: &Formatter{
+			Name:      FORMATTER_TEXT,
+			Formatter: &logrus.TextFormatter{},
+		},
+		// logrus
+		FORMATTER_JSON: &Formatter{
+			Name:      FORMATTER_JSON,
+			Formatter: &logrus.JSONFormatter{},
+		},
+	}
 )
 
 // load ruslog
@@ -108,8 +104,8 @@ func GetLogger(name string) *Logger {
 	l := Logging.loggers[name]
 	// if name logger is not found, return default logger.
 	if l == nil {
-		l = &Logger{Type: APPENDER_DEFAULT}
-		return l.Setup()
+		l = &Logger{Name: name, Type: APPENDER_DEFAULT, Level: "Info", Format: FORMATTER_TEXT}
+		Configure([]*Logger{l})
 	}
 	return l
 }
