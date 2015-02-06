@@ -57,26 +57,22 @@ var (
 	}
 
 	// Manage ruslog(logrus) formatters
-	Formatters = func() formatters {
-		ret := formatters{
-			FORMATTER_SIMPLE: &Formatter{
-				Name:      FORMATTER_SIMPLE,
-				Formatter: &SimpleFormatter{},
-			},
-			//logrus
-			FORMATTER_TEXT: &Formatter{
-				Name:      FORMATTER_TEXT,
-				Formatter: &logrus.TextFormatter{},
-			},
-			// logrus
-			FORMATTER_JSON: &Formatter{
-				Name:      FORMATTER_JSON,
-				Formatter: &logrus.JSONFormatter{},
-			},
-		}
-
-		return ret
-	}()
+	Formatters = formatters{
+		FORMATTER_SIMPLE: &Formatter{
+			Name:      FORMATTER_SIMPLE,
+			Formatter: &SimpleFormatter{},
+		},
+		//logrus
+		FORMATTER_TEXT: &Formatter{
+			Name:      FORMATTER_TEXT,
+			Formatter: &logrus.TextFormatter{},
+		},
+		// logrus
+		FORMATTER_JSON: &Formatter{
+			Name:      FORMATTER_JSON,
+			Formatter: &logrus.JSONFormatter{},
+		},
+	}
 )
 
 // load ruslog
