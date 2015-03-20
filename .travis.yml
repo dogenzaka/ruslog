@@ -10,6 +10,8 @@ install:
  - go get golang.org/x/tools/cmd/cover
  - go get github.com/smartystreets/goconvey
  - go get github.com/smartystreets/assertions
+ - go get github.com/Sirupsen/logrus
+ - go get github.com/dogenzaka/rotator
 
 script:
  - go test -v -coverprofile=coverage.txt -covermode=count
