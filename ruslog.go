@@ -129,25 +129,6 @@ func GetLevel(level string) logrus.Level {
 // Call logger method for a given level
 func CallMethod(logger *Logger, level string, message string, options map[string]interface{}) {
 
-	if logger.AddFileInfo {
-		if options == nil {
-			options = map[string]interface{}{}
-		}
-		var info string
-		for depth := 1; ; depth++ {
-			_, file, line, ok := runtime.Caller(depth)
-			if !ok {
-				info = "unknown"
-				break
-			}
-			if !strings.HasSuffix(file, appenderFileName) && !strings.HasSuffix(file, ruslogFileName) {
-				info = fmt.Sprintf("%s:%d", file, line)
-				break
-			}
-		}
-		options["file"] = info
-	}
-
 	loggerLogrus := logger.logrus
 	entry := loggerLogrus.WithFields(options)
 	methodName := level
@@ -179,54 +160,54 @@ func (logger *Logger) Setup() *Logger {
 
 // Debug log output (goroutine)
 func (l *Logger) Debug(options map[string]interface{}, messages ...string) {
-	go l.Call("Debug", options, messages)
+	go l.Call("Debug", l.addFileInfo(options), messages)
 }
 
 // Info log output (goroutine)
 func (l *Logger) Info(options map[string]interface{}, messages ...string) {
-	go l.Call("Info", options, messages)
+	go l.Call("Info", l.addFileInfo(options), messages)
 }
 
 // Warn log output (goroutine)
 func (l *Logger) Warn(options map[string]interface{}, messages ...string) {
-	go l.Call("Warn", options, messages)
+	go l.Call("Warn", l.addFileInfo(options), messages)
 }
 
 // Error log output (goroutine)
 func (l *Logger) Error(options map[string]interface{}, messages ...string) {
-	go l.Call("Error", options, messages)
+	go l.Call("Error", l.addFileInfo(options), messages)
 }
 
 // Fatal log output (goroutine)
 func (l *Logger) Fatal(options map[string]interface{}, messages ...string) {
-	go l.Call("Fatal", options, messages)
+	go l.Call("Fatal", l.addFileInfo(options), messages)
 }
 
 ///
 
 // Debug log output (not goroutine)
 func (l *Logger) DebugSync(options map[string]interface{}, messages ...string) {
-	l.Call("Debug", options, messages)
+	l.Call("Debug", l.addFileInfo(options), messages)
 }
 
 // Info log output (not goroutine)
 func (l *Logger) InfoSync(options map[string]interface{}, messages ...string) {
-	l.Call("Info", options, messages)
+	l.Call("Info", l.addFileInfo(options), messages)
 }
 
 // Warn log output (not goroutine)
 func (l *Logger) WarnSync(options map[string]interface{}, messages ...string) {
-	l.Call("Warn", options, messages)
+	l.Call("Warn", l.addFileInfo(options), messages)
 }
 
 // Error log output (not goroutine)
 func (l *Logger) ErrorSync(options map[string]interface{}, messages ...string) {
-	l.Call("Error", options, messages)
+	l.Call("Error", l.addFileInfo(options), messages)
 }
 
 // Fatal log output (not goroutine)
 func (l *Logger) FatalSync(options map[string]interface{}, messages ...string) {
-	l.Call("Fatal", options, messages)
+	l.Call("Fatal", l.addFileInfo(options), messages)
 }
 
 ///
@@ -241,4 +222,28 @@ func (l *Logger) Output(calldepth int, s string) error {
 func (l *Logger) Write(p []byte) (n int, err error) {
 	go l.logrus.Out.Write(p)
 	return 0, nil // The exception is ignored
+}
+
+///
+
+// addFileInfo add the file info to the options if AddFileInfo is true.
+func (l *Logger) addFileInfo(options map[string]interface{}) map[string]interface{} {
+	if !l.AddFileInfo {
+		return options
+	}
+	if options == nil {
+		options = map[string]interface{}{}
+	}
+	for depth := 1; ; depth++ {
+		_, file, line, ok := runtime.Caller(depth)
+		if !ok {
+			options["file"] = "unknown"
+			break
+		}
+		if !strings.HasSuffix(file, appenderFileName) && !strings.HasSuffix(file, ruslogFileName) {
+			options["file"] = fmt.Sprintf("%s:%d", file, line)
+			break
+		}
+	}
+	return options
 }
