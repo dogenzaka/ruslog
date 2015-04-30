@@ -3,9 +3,15 @@ package ruslog
 import (
 	"fmt"
 	"reflect"
+	"runtime"
 	"strings"
 
 	"github.com/Sirupsen/logrus"
+)
+
+const (
+	ruslogFileName   = "github.com/dogenzaka/ruslog/ruslog.go"
+	appenderFileName = "github.com/dogenzaka/ruslog/appender.go"
 )
 
 type (
@@ -15,8 +21,9 @@ type (
 		Format       string // ruslog.FORMATTER_XXXX
 		Level        string // logrus.XXXXLevel.String()
 		FilePath     string // outpu file path (optional)
-		RotationSize int64  //  size threshold of the rotation example 10M) 1024 * 1024 * 10 (optional)
+		RotationSize int64  // size threshold of the rotation example 10M) 1024 * 1024 * 10 (optional)
 		MaxRotation  int    // maximum count of the rotation (optional)
+		AddFileInfo  bool   // add the file info to the log message (optional)
 
 		Call func(level string, options map[string]interface{}, messages []string)
 
@@ -121,8 +128,27 @@ func GetLevel(level string) logrus.Level {
 
 // Call logger method for a given level
 func CallMethod(logger *Logger, level string, message string, options map[string]interface{}) {
-	loggerLogrus := logger.logrus
 
+	if logger.AddFileInfo {
+		if options == nil {
+			options = map[string]interface{}{}
+		}
+		var info string
+		for depth := 1; ; depth++ {
+			_, file, line, ok := runtime.Caller(depth)
+			if !ok {
+				info = "unknown"
+				break
+			}
+			if !strings.HasSuffix(file, appenderFileName) && !strings.HasSuffix(file, ruslogFileName) {
+				info = fmt.Sprintf("%s:%d", file, line)
+				break
+			}
+		}
+		options["file"] = info
+	}
+
+	loggerLogrus := logger.logrus
 	entry := loggerLogrus.WithFields(options)
 	methodName := level
 	method := reflect.ValueOf(entry).MethodByName(methodName)
