@@ -1,6 +1,7 @@
 package ruslog
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Sirupsen/logrus"
@@ -27,8 +28,13 @@ func defaultAppender(l *Logger) *Logger {
 		message := strings.Join(messages, " ") // dynamic message
 		CallMethod(l, level, message, options)
 	}
-	l.logrus = log
 
+	l.Callf = func(level string, options map[string]interface{}, format string, args ...interface{}) {
+		message := fmt.Sprintf(format, args...) // formatting message
+		CallMethod(l, level, message, options)
+	}
+
+	l.logrus = log
 	return l
 }
 
