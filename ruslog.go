@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
+	"sync"
 
 	"github.com/Sirupsen/logrus"
 )
@@ -20,7 +21,7 @@ type (
 		Type         string // ruslog.APPENDER_XXXX
 		Format       string // ruslog.FORMATTER_XXXX
 		Level        string // logrus.XXXXLevel.String()
-		FilePath     string // outpu file path (optional)
+		FilePath     string // output file path (optional)
 		RotationSize int64  // size threshold of the rotation example 10M) 1024 * 1024 * 10 (optional)
 		MaxRotation  int    // maximum count of the rotation (optional)
 		AddFileInfo  bool   // add the file info to the log message (optional)
@@ -28,6 +29,7 @@ type (
 		Call  func(level string, options map[string]interface{}, messages []string)
 		Callf func(level string, options map[string]interface{}, format string, args ...interface{})
 
+		sync.Mutex
 		logrus *logrus.Logger
 	}
 
@@ -259,6 +261,22 @@ func (l *Logger) ErrorfSync(options map[string]interface{}, format string, args 
 // Fatalf log output (not goroutine)
 func (l *Logger) FatalfSync(options map[string]interface{}, format string, args ...interface{}) {
 	l.Callf("Fatal", l.addFileInfo(options), format, args...)
+}
+
+///
+
+// SetLevel sets the logger level.
+func (l *Logger) SetLevel(level logrus.Level) {
+	l.Lock()
+	defer l.Unlock()
+	l.logrus.Level = level
+}
+
+// GetLevel returns the logger level.
+func (l *Logger) GetLevel() logrus.Level {
+	l.Lock()
+	defer l.Unlock()
+	return l.logrus.Level
 }
 
 ///
