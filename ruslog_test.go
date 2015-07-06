@@ -48,18 +48,43 @@ func TestRuslog(t *testing.T) {
 		})
 
 		Convey("Output log", func() {
-			fmt.Println("")
 			logger := Logging.loggers["Test0"]
 			logger.Debug(nil, "output log level:Debug")
 			logger.Info(nil, "output log level:Info")
 			logger.Warn(nil, "output log level:Warn")
 			logger.Error(nil, "output log level:Error")
-			//logger.Fatal(nil, "output log level:Fatal")
-
 			ok := reflect.ValueOf(logger).Elem().Type() == reflect.ValueOf(&Logger{}).Elem().Type()
-
 			So(ok, ShouldEqual, true)
+		})
 
+		Convey("Output log sync", func() {
+			logger := Logging.loggers["Test0"]
+			logger.DebugSync(nil, "output log sync level:Debug")
+			logger.InfoSync(nil, "output log sync level:Info")
+			logger.WarnSync(nil, "output log sync level:Warn")
+			logger.ErrorSync(nil, "output log sync level:Error")
+			ok := reflect.ValueOf(logger).Elem().Type() == reflect.ValueOf(&Logger{}).Elem().Type()
+			So(ok, ShouldEqual, true)
+		})
+
+		Convey("Output format log", func() {
+			logger := Logging.loggers["Test0"]
+			logger.Debugf(nil, "output format log level:%s", logrus.DebugLevel.String())
+			logger.Infof(nil, "output format log level:%s", logrus.InfoLevel.String())
+			logger.Warnf(nil, "output format log level:%s", logrus.WarnLevel.String())
+			logger.Errorf(nil, "output format log level:%s", logrus.ErrorLevel.String())
+			ok := reflect.ValueOf(logger).Elem().Type() == reflect.ValueOf(&Logger{}).Elem().Type()
+			So(ok, ShouldEqual, true)
+		})
+
+		Convey("Output format log sync", func() {
+			logger := Logging.loggers["Test0"]
+			logger.DebugfSync(nil, "output format log sync level:%s", logrus.DebugLevel.String())
+			logger.InfofSync(nil, "output format log sync level:%s", logrus.InfoLevel.String())
+			logger.WarnfSync(nil, "output format log sync level:%s", logrus.WarnLevel.String())
+			logger.ErrorfSync(nil, "output format log sync level:%s", logrus.ErrorLevel.String())
+			ok := reflect.ValueOf(logger).Elem().Type() == reflect.ValueOf(&Logger{}).Elem().Type()
+			So(ok, ShouldEqual, true)
 		})
 
 		Convey("Output multi log", func() {
@@ -90,7 +115,6 @@ func TestRuslog(t *testing.T) {
 			logger3.Info(nil, "output multi log level:Info 3")
 			logger3.Warn(nil, "output multi log level:Warn 3")
 			logger3.Error(nil, "output multi log level:Error 3")
-
 		})
 
 		Convey("Get Level", func() {
@@ -98,7 +122,6 @@ func TestRuslog(t *testing.T) {
 			So(GetLevel("DEBUG"), ShouldEqual, logrus.DebugLevel)
 			So(GetLevel("DeBug"), ShouldEqual, logrus.DebugLevel)
 			So(GetLevel("debug"), ShouldEqual, logrus.DebugLevel)
-
 		})
 
 	})

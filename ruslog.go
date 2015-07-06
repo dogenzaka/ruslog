@@ -25,7 +25,8 @@ type (
 		MaxRotation  int    // maximum count of the rotation (optional)
 		AddFileInfo  bool   // add the file info to the log message (optional)
 
-		Call func(level string, options map[string]interface{}, messages []string)
+		Call  func(level string, options map[string]interface{}, messages []string)
+		Callf func(level string, options map[string]interface{}, format string, args ...interface{})
 
 		logrus *logrus.Logger
 	}
@@ -158,6 +159,8 @@ func (logger *Logger) Setup() *Logger {
 	return appender.Setup(logger)
 }
 
+///
+
 // Debug log output (goroutine)
 func (l *Logger) Debug(options map[string]interface{}, messages ...string) {
 	go l.Call("Debug", l.addFileInfo(options), messages)
@@ -183,7 +186,30 @@ func (l *Logger) Fatal(options map[string]interface{}, messages ...string) {
 	go l.Call("Fatal", l.addFileInfo(options), messages)
 }
 
-///
+// Debugf log output (goroutine)
+func (l *Logger) Debugf(options map[string]interface{}, format string, args ...interface{}) {
+	go l.Callf("Debug", l.addFileInfo(options), format, args...)
+}
+
+// Infof log output (goroutine)
+func (l *Logger) Infof(options map[string]interface{}, format string, args ...interface{}) {
+	go l.Callf("Info", l.addFileInfo(options), format, args...)
+}
+
+// Warnf log output (goroutine)
+func (l *Logger) Warnf(options map[string]interface{}, format string, args ...interface{}) {
+	go l.Callf("Warn", l.addFileInfo(options), format, args...)
+}
+
+// Errorf log output (goroutine)
+func (l *Logger) Errorf(options map[string]interface{}, format string, args ...interface{}) {
+	go l.Callf("Error", l.addFileInfo(options), format, args...)
+}
+
+// Fatalf log output (goroutine)
+func (l *Logger) Fatalf(options map[string]interface{}, format string, args ...interface{}) {
+	go l.Callf("Fatal", l.addFileInfo(options), format, args...)
+}
 
 // Debug log output (not goroutine)
 func (l *Logger) DebugSync(options map[string]interface{}, messages ...string) {
@@ -208,6 +234,31 @@ func (l *Logger) ErrorSync(options map[string]interface{}, messages ...string) {
 // Fatal log output (not goroutine)
 func (l *Logger) FatalSync(options map[string]interface{}, messages ...string) {
 	l.Call("Fatal", l.addFileInfo(options), messages)
+}
+
+// Debugf log output (not goroutine)
+func (l *Logger) DebugfSync(options map[string]interface{}, format string, args ...interface{}) {
+	l.Callf("Debug", l.addFileInfo(options), format, args...)
+}
+
+// Infof log output (not goroutine)
+func (l *Logger) InfofSync(options map[string]interface{}, format string, args ...interface{}) {
+	l.Callf("Info", l.addFileInfo(options), format, args...)
+}
+
+// Warnf log output (not goroutine)
+func (l *Logger) WarnfSync(options map[string]interface{}, format string, args ...interface{}) {
+	l.Callf("Warn", l.addFileInfo(options), format, args...)
+}
+
+// Errorf log output (not goroutine)
+func (l *Logger) ErrorfSync(options map[string]interface{}, format string, args ...interface{}) {
+	l.Callf("Error", l.addFileInfo(options), format, args...)
+}
+
+// Fatalf log output (not goroutine)
+func (l *Logger) FatalfSync(options map[string]interface{}, format string, args ...interface{}) {
+	l.Callf("Fatal", l.addFileInfo(options), format, args...)
 }
 
 ///
